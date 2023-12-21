@@ -1,12 +1,27 @@
-﻿<Window x:Class="AutoClicker.UI.MainWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AutoClicker.UI"
+        xmlns:Script="clr-namespace:AutoClicker.UI.Script" xmlns:Collections="clr-namespace:System.Collections;assembly=System.Runtime" x:Class="AutoClicker.UI.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="MainWindow" Height="810" Width="800">
+    <Grid x:Name="gridMain" Background="#FF1F1F1F" Margin="0,0,0,-5">
+        <Button x:Name="btnAdd" HorizontalAlignment="Left" Margin="196,10,0,0" VerticalAlignment="Top" Height="54" Width="88" Background="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Click="btnAdd_Click" Content="Add Script"/>
+        <Button x:Name="btnRemove" HorizontalAlignment="Left" Margin="289,10,0,0" VerticalAlignment="Top" Height="54" Width="88" Background="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Click="btnAdd_Click" Content="Remove Script"/>
+        <Button x:Name="btnRun" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="54" Width="88" Background="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Click="btnAdd_Click" Content="Run Script"/>
+        <TabControl x:Name="tabControl" HorizontalAlignment="Center" Height="686" Margin="0,86,0,0" VerticalAlignment="Top" Width="780" Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}">
+            <TabItem x:Name="TabItemScript" Header="Script" OpacityMask="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}" Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}">
+                <Grid Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}">
+                    <ListBox x:Name="listBoxScriptList" HorizontalAlignment="Left" Height="639" Margin="10,0,0,0" VerticalAlignment="Center" Width="167" Background="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}" IsSynchronizedWithCurrentItem="True" SelectionChanged="listBoxScriptList_SelectionChanged"/>
+                    <ListBox x:Name="listBoxScriptContect" HorizontalAlignment="Left" Height="639" Margin="188,0,0,0" VerticalAlignment="Center" Width="576" Background="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}"/>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="TabItemSetting" Header="Setting" Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}">
+                <Grid Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}"/>
+            </TabItem>
+        </TabControl>
 
     </Grid>
 </Window>

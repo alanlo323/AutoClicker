@@ -15,9 +15,9 @@ using WindowsInput;
 using WindowsInput.Native;
 using Point = System.Drawing.Point;
 
-namespace AutoClicker.Runtime
+namespace AutoClicker.Runtime.Core
 {
-    internal class MarcoEvent
+    public class MarcoEvent
     {
         public enum MarcoEventType
         {
@@ -26,7 +26,7 @@ namespace AutoClicker.Runtime
             MouseKeyEvent,
             KeyboardEvent,
             FocusWindow,
-            FindImageLocation,
+            FindImage,
         }
 
         public enum KeyboardKeyType
@@ -71,9 +71,9 @@ namespace AutoClicker.Runtime
 
         public enum MouseKeyType
         {
-            LeftClick,
-            MiddleClick,
-            RightClick
+            LeftKey,
+            MiddleKey,
+            RightKey
         }
 
         public enum KeyEventType
@@ -115,18 +115,18 @@ namespace AutoClicker.Runtime
         public bool ShowInLogger { get; set; } = false;
 
         [DllImport("USER32.DLL", CharSet = CharSet.Unicode)]
-        public static extern IntPtr FindWindow(String lpClassName, String lpWindowName);
+        public static extern nint FindWindow(string lpClassName, string lpWindowName);
 
         [DllImport("USER32.DLL")]
-        public static extern bool SetForegroundWindow(IntPtr hWnd);
+        public static extern bool SetForegroundWindow(nint hWnd);
 
         public static void BringToFront(string title)
         {
             // Get a handle to the Calculator application.
-            IntPtr handle = FindWindow(null, title);
+            nint handle = FindWindow(null, title);
 
             // Verify that Calculator is a running process.
-            if (handle == IntPtr.Zero)
+            if (handle == nint.Zero)
             {
                 return;
             }
@@ -190,7 +190,7 @@ namespace AutoClicker.Runtime
                         case MarcoEventType.MouseKeyEvent:
                             switch (marcoEvent.MouseKey)
                             {
-                                case MouseKeyType.LeftClick:
+                                case MouseKeyType.LeftKey:
                                     switch (marcoEvent.KeyEvent)
                                     {
                                         case KeyEventType.Down:
@@ -213,7 +213,7 @@ namespace AutoClicker.Runtime
                                     }
                                     break;
 
-                                case MouseKeyType.MiddleClick:
+                                case MouseKeyType.MiddleKey:
                                     switch (marcoEvent.KeyEvent)
                                     {
                                         case KeyEventType.Down:
@@ -233,7 +233,7 @@ namespace AutoClicker.Runtime
                                     }
                                     break;
 
-                                case MouseKeyType.RightClick:
+                                case MouseKeyType.RightKey:
                                     switch (marcoEvent.KeyEvent)
                                     {
                                         case KeyEventType.Down:
@@ -282,7 +282,7 @@ namespace AutoClicker.Runtime
                                     break;
                             }
                             break;
-                        case MarcoEventType.FindImageLocation:
+                        case MarcoEventType.FindImage:
                             Rectangle rectangle;
                             if (string.IsNullOrEmpty(marcoEvent.WindowName))
                             {
@@ -325,5 +325,46 @@ namespace AutoClicker.Runtime
 
         }
 
+        public override string ToString() => ToString();
+
+        private string ToString(int layer = 0)
+        {
+            string result = string.Empty;
+            for (int i = 0; i < layer; i++) result += "\t";
+            if (!string.IsNullOrWhiteSpace(Name)) result += $"[{Name}] ";
+            result += $"{EventType}";
+
+            switch (EventType)
+            {
+                case MarcoEventType.EmptyEvent:
+                    break;
+                case MarcoEventType.MouseMoveEvent:
+                    result += $" - X:{MouseMoveX} Y:{MouseMoveY}";
+                    break;
+                case MarcoEventType.MouseKeyEvent:
+                    result += $" - {MouseKey} {KeyEvent}";
+                    break;
+                case MarcoEventType.KeyboardEvent:
+                    result += $" - {KeyboardKey} {KeyEvent}";
+                    break;
+                case MarcoEventType.FocusWindow:
+                    result += $" - {WindowName}";
+                    break;
+                case MarcoEventType.FindImage:
+                    result += $" - {ImageFilePath}";
+                    break;
+                default:
+                    break;
+            }
+
+            if (!string.IsNullOrWhiteSpace(RefKey)) result += $" - RefKey:{RefKey}";
+
+            foreach (MarcoEvent subEvent in SubEvents)
+            {
+                result += $"\n{subEvent.ToString(layer + 1)}";
+            }
+
+            return result;
+        }
     }
 }

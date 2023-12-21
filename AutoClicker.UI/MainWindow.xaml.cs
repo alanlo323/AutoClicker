@@ -8,6 +8,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AutoClicker.Runtime.Script;
+using AutoClicker.UI.Script;
 
 namespace AutoClicker.UI
 {
@@ -16,9 +18,25 @@ namespace AutoClicker.UI
     /// </summary>
     public partial class MainWindow : Window
     {
+        private List<BaseScipt> _scripts = [];
         public MainWindow()
         {
             InitializeComponent();
+            Init();
+        }
+
+        private void Init()
+        {
+            listBoxScriptList.ItemsSource = new List<BaseScipt>() { new TestScript(), new MabinogiScript() };
+        }
+
+        private void btnAdd_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void listBoxScriptList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            listBoxScriptContect.ItemsSource = ((BaseScipt)listBoxScriptList.SelectedItem).MarcoEvents;
         }
     }
 }
