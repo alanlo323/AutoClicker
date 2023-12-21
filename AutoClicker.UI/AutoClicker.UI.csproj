@@ -21,4 +21,10 @@
     <ProjectReference Include="..\AutoClicker.Runtime\AutoClicker.Runtime.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="App_Data\1.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

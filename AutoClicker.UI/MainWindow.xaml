@@ -9,8 +9,8 @@
         Title="MainWindow" Height="810" Width="800">
     <Grid x:Name="gridMain" Background="#FF1F1F1F" Margin="0,0,0,-5">
         <Button x:Name="btnAdd" HorizontalAlignment="Left" Margin="196,10,0,0" VerticalAlignment="Top" Height="54" Width="88" Background="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Click="btnAdd_Click" Content="Add Script"/>
-        <Button x:Name="btnRemove" HorizontalAlignment="Left" Margin="289,10,0,0" VerticalAlignment="Top" Height="54" Width="88" Background="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Click="btnAdd_Click" Content="Remove Script"/>
-        <Button x:Name="btnRun" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="54" Width="88" Background="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Click="btnAdd_Click" Content="Run Script"/>
+        <Button x:Name="btnRemove" HorizontalAlignment="Left" Margin="289,10,0,0" VerticalAlignment="Top" Height="54" Width="88" Background="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Content="Remove Script"/>
+        <Button x:Name="btnRun" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="54" Width="88" Background="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Content="Run Script" Click="btnRun_Click"/>
         <TabControl x:Name="tabControl" HorizontalAlignment="Center" Height="686" Margin="0,86,0,0" VerticalAlignment="Top" Width="780" Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}">
             <TabItem x:Name="TabItemScript" Header="Script" OpacityMask="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}" Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}">
                 <Grid Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}">

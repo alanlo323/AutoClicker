@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using AutoClicker;
 using AutoClicker.Runtime.Core;
 using AutoClicker.UI.Script;
 
-namespace AutoClicker.Runtime.Script
+namespace AutoClicker.UI.Script.Sample
 {
     internal class MabinogiScript : BaseScipt
     {

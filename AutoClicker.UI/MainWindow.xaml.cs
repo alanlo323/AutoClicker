@@ -8,8 +8,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using AutoClicker.Runtime.Script;
+using AutoClicker.Runtime;
 using AutoClicker.UI.Script;
+using AutoClicker.UI.Script.Sample;
 
 namespace AutoClicker.UI
 {
@@ -28,6 +29,22 @@ namespace AutoClicker.UI
         private void Init()
         {
             listBoxScriptList.ItemsSource = new List<BaseScipt>() { new TestScript(), new MabinogiScript() };
+        }
+
+        private void btnRun_Click(object sender, RoutedEventArgs e)
+        {
+            if (listBoxScriptList.SelectedItem != null && listBoxScriptList.SelectedItem is BaseScipt script)
+            {
+                try
+                {
+                    MarcoRuntime runtime = new();
+                    runtime.RunMarco(script.MarcoEvents);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Execution failed", $"{ex}");
+                }
+            }
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)

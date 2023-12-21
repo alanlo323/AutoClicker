@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using AutoClicker;
 using AutoClicker.Runtime.Core;
 using AutoClicker.UI.Script;
 
-namespace AutoClicker.Runtime.Script
+namespace AutoClicker.UI.Script.Sample
 {
     internal class TestScript : BaseScipt
     {
@@ -17,7 +16,7 @@ namespace AutoClicker.Runtime.Script
                 DelayAfter = 1000,
                 EventType = MarcoEvent.MarcoEventType.FindImage,
                 WindowName = "1.jpg - 小畫家",
-                ImageFilePath = "D:\\Git\\AutoClicker\\AutoClicker.Runtime\\App_Data\\1.jpg",
+                ImageFilePath = "App_Data\\1.jpg",
                 ResultKey = "buttonLocation1",
             },
             new()

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoClicker.Runtime.Core;
-using AutoClicker.Runtime.Script;
 
 namespace AutoClicker.UI.Script
 {
