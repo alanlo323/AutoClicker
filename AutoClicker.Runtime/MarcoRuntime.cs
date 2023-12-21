@@ -9,6 +9,12 @@ namespace AutoClicker.Runtime
 {
     public class MarcoRuntime
     {
+        private readonly Dictionary<object, object> runtimeDatabase;
+
+        public MarcoRuntime()
+        {
+            runtimeDatabase = Helper.RuntimeDatabase.CreateRuntimeDatabase();
+        }
 
         public void RunMarco(List<MarcoEvent> marcoEvents)
         {
@@ -16,7 +22,7 @@ namespace AutoClicker.Runtime
             {
                 try
                 {
-                    marcoEvent.Excute();
+                    marcoEvent.Excute(runtimeDatabase);
                 }
                 catch (Exception ex)
                 {

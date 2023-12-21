@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AutoClicker.Runtime;
+using AutoClicker.Runtime.Core;
 using AutoClicker.UI.Script;
 using AutoClicker.UI.Script.Sample;
 
@@ -28,7 +29,8 @@ namespace AutoClicker.UI
 
         private void Init()
         {
-            listBoxScriptList.ItemsSource = new List<BaseScipt>() { new TestScript(), new MabinogiScript() };
+            _scripts = new List<BaseScipt>() { new TestScript(), new MabinogiScript() };
+            listBoxScriptList.ItemsSource = _scripts;
         }
 
         private void btnRun_Click(object sender, RoutedEventArgs e)
@@ -53,7 +55,9 @@ namespace AutoClicker.UI
 
         private void listBoxScriptList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            listBoxScriptContect.ItemsSource = ((BaseScipt)listBoxScriptList.SelectedItem).MarcoEvents;
+            List<MarcoEvent> events = [];
+            events.AddRange(((BaseScipt)listBoxScriptList.SelectedItem).GetAllMarcoEvents());
+            listBoxScriptContect.ItemsSource = events;
         }
     }
 }

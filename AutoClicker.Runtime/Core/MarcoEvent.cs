@@ -114,6 +114,8 @@ namespace AutoClicker.Runtime.Core
         public string ResultKey { get; set; }
         public bool ShowInLogger { get; set; } = false;
 
+        public int layer { get; set; } = 0;
+
         [DllImport("USER32.DLL", CharSet = CharSet.Unicode)]
         public static extern nint FindWindow(string lpClassName, string lpWindowName);
 
@@ -140,8 +142,9 @@ namespace AutoClicker.Runtime.Core
             Console.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff")} | {message}");
         }
 
-        public void Excute()
+        public void Excute(Dictionary<object, object> runtimeDatabase)
         {
+            if (runtimeDatabase == null) runtimeDatabase = RuntimeDatabase.Default;
             MarcoEvent marcoEvent = this;
             InputSimulator inputSimulator = new();
 
@@ -181,8 +184,8 @@ namespace AutoClicker.Runtime.Core
                         case MarcoEventType.MouseMoveEvent:
                             if (!string.IsNullOrEmpty(marcoEvent.RefKey))
                             {
-                                marcoEvent.MouseMoveX = ((Point)RuntimeDatabase.Default[marcoEvent.RefKey]).X;
-                                marcoEvent.MouseMoveY = ((Point)RuntimeDatabase.Default[marcoEvent.RefKey]).Y;
+                                marcoEvent.MouseMoveX = ((Point)runtimeDatabase[marcoEvent.RefKey]).X;
+                                marcoEvent.MouseMoveY = ((Point)runtimeDatabase[marcoEvent.RefKey]).Y;
                             }
                             inputSimulator.Mouse.MoveMouseTo(marcoEvent.MouseMoveX / screenWidth * 65535, marcoEvent.MouseMoveY / screenHeight * 65535);
                             if (marcoEvent.ShowInLogger) LogWriteLine($"Move mouse to {marcoEvent.MouseMoveX} {marcoEvent.MouseMoveY}");
@@ -299,7 +302,7 @@ namespace AutoClicker.Runtime.Core
                                 Thread.Sleep(50);
                             }
                             var searchResult = ScreenHelper.FindImageInRectangele(rectangle, marcoEvent.ImageFilePath);
-                            if (!string.IsNullOrEmpty(marcoEvent.ResultKey)) RuntimeDatabase.Default[marcoEvent.ResultKey] = searchResult;
+                            if (!string.IsNullOrEmpty(marcoEvent.ResultKey)) runtimeDatabase[marcoEvent.ResultKey] = searchResult;
                             if (marcoEvent.ShowInLogger) LogWriteLine($"Image found at  {searchResult.X} {searchResult.Y}");
                             break;
 
@@ -312,7 +315,7 @@ namespace AutoClicker.Runtime.Core
                     {
                         foreach (MarcoEvent subEvent in marcoEvent.SubEvents)
                         {
-                            subEvent.Excute();
+                            subEvent.Excute(runtimeDatabase);
                         }
                     }
                 }
@@ -325,9 +328,21 @@ namespace AutoClicker.Runtime.Core
 
         }
 
-        public override string ToString() => ToString();
+        public List<MarcoEvent> GetAllSubEvents(int layer = 0)
+        {
+            this.layer = layer;
+            List<MarcoEvent> result = [this];
+            if (SubEvents != null)
+            {
+                foreach (MarcoEvent subEvent in SubEvents)
+                {
+                    result.AddRange(subEvent.GetAllSubEvents(layer + 1));
+                }
+            }
+            return result;
+        }
 
-        private string ToString(int layer = 0)
+        public override string ToString()
         {
             string result = string.Empty;
             for (int i = 0; i < layer; i++) result += "\t";
@@ -358,11 +373,6 @@ namespace AutoClicker.Runtime.Core
             }
 
             if (!string.IsNullOrWhiteSpace(RefKey)) result += $" - RefKey:{RefKey}";
-
-            foreach (MarcoEvent subEvent in SubEvents)
-            {
-                result += $"\n{subEvent.ToString(layer + 1)}";
-            }
 
             return result;
         }

@@ -12,6 +12,16 @@ namespace AutoClicker.UI.Script
         public virtual string Name { get; set; } = nameof(BaseScipt);
         public virtual List<MarcoEvent> MarcoEvents { get; }
 
+        public List<MarcoEvent> GetAllMarcoEvents()
+        {
+            List<MarcoEvent> marcoEvents = [];
+            foreach (var marcoEvent in MarcoEvents)
+            {
+                marcoEvents.AddRange(marcoEvent.GetAllSubEvents());
+            }
+            return marcoEvents;
+        }
+
         public override string ToString()
         {
             return Name;

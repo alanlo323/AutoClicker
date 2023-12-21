@@ -9,5 +9,6 @@ namespace AutoClicker.Runtime.Helper
     public class RuntimeDatabase
     {
         public static Dictionary<object, object> Default { get; } = new();
+        public static Dictionary<object, object> CreateRuntimeDatabase() { return []; }
     }
 }
