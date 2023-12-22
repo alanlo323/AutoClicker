@@ -6,22 +6,37 @@
         xmlns:local="clr-namespace:AutoClicker.UI"
         xmlns:Script="clr-namespace:AutoClicker.UI.Script" xmlns:Collections="clr-namespace:System.Collections;assembly=System.Runtime" x:Class="AutoClicker.UI.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="810" Width="800">
-    <Grid x:Name="gridMain" Background="#FF1F1F1F" Margin="0,0,0,-5">
+        Title="MainWindow" Height="810" Width="1100">
+    <Grid x:Name="gridMain" Background="#FF1F1F1F" Margin="0,0,0,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="206*"/>
+            <ColumnDefinition Width="143*"/>
+        </Grid.ColumnDefinitions>
         <Button x:Name="btnAdd" HorizontalAlignment="Left" Margin="196,10,0,0" VerticalAlignment="Top" Height="54" Width="88" Background="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Click="btnAdd_Click" Content="Add Script"/>
         <Button x:Name="btnRemove" HorizontalAlignment="Left" Margin="289,10,0,0" VerticalAlignment="Top" Height="54" Width="88" Background="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Content="Remove Script"/>
         <Button x:Name="btnRun" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="54" Width="88" Background="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Content="Run Script" Click="btnRun_Click"/>
-        <TabControl x:Name="tabControl" HorizontalAlignment="Center" Height="686" Margin="0,86,0,0" VerticalAlignment="Top" Width="780" Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}">
+        <TabControl x:Name="tabControl" HorizontalAlignment="Left" Height="686" Margin="10,86,0,0" VerticalAlignment="Top" Width="780" Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}" Grid.ColumnSpan="2">
             <TabItem x:Name="TabItemScript" Header="Script" OpacityMask="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}" Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}">
                 <Grid Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}">
                     <ListBox x:Name="listBoxScriptList" HorizontalAlignment="Left" Height="639" Margin="10,0,0,0" VerticalAlignment="Center" Width="167" Background="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}" IsSynchronizedWithCurrentItem="True" SelectionChanged="listBoxScriptList_SelectionChanged"/>
-                    <ListBox x:Name="listBoxScriptContect" HorizontalAlignment="Left" Height="639" Margin="188,0,0,0" VerticalAlignment="Center" Width="576" Background="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}"/>
+                    <ListBox x:Name="listBoxScriptContect" HorizontalAlignment="Left" Height="639" Margin="188,0,0,0" VerticalAlignment="Center" Width="576" Background="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}" SelectionChanged="listBoxScriptContect_SelectionChanged"/>
                 </Grid>
             </TabItem>
             <TabItem x:Name="TabItemSetting" Header="Setting" Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}">
                 <Grid Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}"/>
             </TabItem>
         </TabControl>
-
+        <GroupBox x:Name="groupBox" Header="Properites" Margin="166,109,10,10" Grid.Column="1" Foreground="White">
+            <ListBox x:Name="listBoxProperties" d:ItemsSource="{d:SampleData ItemCount=5}" Background="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <WrapPanel>
+                            <Label Content="{Binding PropertyName}" Width="100" HorizontalAlignment="Center"/>
+                            <TextBox Text="{Binding PropertyValue}" MinWidth="100" HorizontalAlignment="Center" VerticalAlignment="Center" Background="LightGray"/>
+                        </WrapPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </GroupBox>
     </Grid>
 </Window>

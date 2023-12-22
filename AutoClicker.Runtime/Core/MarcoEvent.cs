@@ -345,9 +345,15 @@ namespace AutoClicker.Runtime.Core
         public override string ToString()
         {
             string result = string.Empty;
+            if (DelayBefore != 0)
+            {
+                for (int i = 0; i < layer; i++) result += "\t";
+                result += $"DelayBefore: {DelayBefore} ms \n";
+            }
             for (int i = 0; i < layer; i++) result += "\t";
             if (!string.IsNullOrWhiteSpace(Name)) result += $"[{Name}] ";
             result += $"{EventType}";
+            if (RepeatCount != 1) result += $" - Repeat:{RepeatCount}";
 
             switch (EventType)
             {
@@ -373,7 +379,14 @@ namespace AutoClicker.Runtime.Core
             }
 
             if (!string.IsNullOrWhiteSpace(RefKey)) result += $" - RefKey:{RefKey}";
+            if (!string.IsNullOrWhiteSpace(ResultKey)) result += $" - ResultKey:{ResultKey}";
 
+            if (DelayAfter != 0)
+            {
+                result += $"\n";
+                for (int i = 0; i < layer; i++) result += "\t";
+                result += $"DelayAfter: {DelayAfter} ms";
+            }
             return result;
         }
     }

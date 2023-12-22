@@ -28,7 +28,6 @@ namespace AutoClicker.UI.Script.Sample
             {
                 Name = "Mouse click",
                 EventType = MarcoEvent.MarcoEventType.MouseKeyEvent,
-                RefKey = "buttonLocation1",
                 MouseKey = MarcoEvent.MouseKeyType.LeftKey,
                 KeyEvent = MarcoEvent.KeyEventType.Press
             },

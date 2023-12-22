@@ -29,7 +29,7 @@ namespace AutoClicker.UI
 
         private void Init()
         {
-            _scripts = new List<BaseScipt>() { new TestScript(), new MabinogiScript() };
+            _scripts = [new TestScript(), new MabinogiScript()];
             listBoxScriptList.ItemsSource = _scripts;
         }
 
@@ -58,6 +58,102 @@ namespace AutoClicker.UI
             List<MarcoEvent> events = [];
             events.AddRange(((BaseScipt)listBoxScriptList.SelectedItem).GetAllMarcoEvents());
             listBoxScriptContect.ItemsSource = events;
+            listBoxProperties.ItemsSource = null;
+        }
+
+        private void listBoxScriptContect_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ListBox listbox = (ListBox)sender;
+            if (listbox.SelectedItem != null && listbox.SelectedItem is MarcoEvent marcoEvent)
+            {
+                List<MarcoParam> dataSource = [
+                    new()
+                    {
+                        MarcoEvent = marcoEvent,
+                        Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.Name))
+                    },
+                    new()
+                    {
+                        MarcoEvent = marcoEvent,
+                        Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.DelayBefore))
+                    },
+                    new()
+                    {
+                        MarcoEvent = marcoEvent,
+                        Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.DelayAfter))
+                    },
+                ];
+
+                switch (marcoEvent.EventType)
+                {
+                    case MarcoEvent.MarcoEventType.EmptyEvent:
+                        break;
+                    case MarcoEvent.MarcoEventType.MouseMoveEvent:
+                        dataSource.Add(new()
+                        {
+                            MarcoEvent = marcoEvent,
+                            Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.MouseMoveX))
+                        });
+                        dataSource.Add(new()
+                        {
+                            MarcoEvent = marcoEvent,
+                            Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.MouseMoveY))
+                        });
+                        dataSource.Add(new()
+                        {
+                            MarcoEvent = marcoEvent,
+                            Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.RefKey))
+                        });
+                        break;
+                    case MarcoEvent.MarcoEventType.MouseKeyEvent:
+                        dataSource.Add(new()
+                        {
+                            MarcoEvent = marcoEvent,
+                            Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.MouseKey))
+                        });
+                        dataSource.Add(new()
+                        {
+                            MarcoEvent = marcoEvent,
+                            Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.KeyEvent))
+                        });
+                        break;
+                    case MarcoEvent.MarcoEventType.KeyboardEvent:
+                        dataSource.Add(new()
+                        {
+                            MarcoEvent = marcoEvent,
+                            Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.KeyboardKey))
+                        });
+                        dataSource.Add(new()
+                        {
+                            MarcoEvent = marcoEvent,
+                            Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.KeyEvent))
+                        });
+                        break;
+                    case MarcoEvent.MarcoEventType.FocusWindow:
+                        dataSource.Add(new()
+                        {
+                            MarcoEvent = marcoEvent,
+                            Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.WindowName))
+                        });
+                        break;
+                    case MarcoEvent.MarcoEventType.FindImage:
+                        dataSource.Add(new()
+                        {
+                            MarcoEvent = marcoEvent,
+                            Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.ImageFilePath))
+                        });
+                        dataSource.Add(new()
+                        {
+                            MarcoEvent = marcoEvent,
+                            Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.ResultKey))
+                        });
+                        break;
+                    default:
+                        break;
+                }
+
+                listBoxProperties.ItemsSource = dataSource;
+            }
         }
     }
 }
