@@ -16,14 +16,14 @@ namespace AutoClicker.UI.Script.Sample
                 DelayAfter = 1000,
                 EventType = MarcoEvent.MarcoEventType.FindImage,
                 WindowName = "新瑪奇 mabinogi",
-                ImageFilePath = "App_Data\\1.png",
-                ImageSearchingArea = new System.Drawing.Rectangle(3374, 0, 467, 447),
-                ResultKey = "buttonLocation1",
+                ImageFilePath = "App_Data\\成長1.png",
+                ImageSearchingArea = new System.Drawing.Rectangle(1156, 0, 1520, 1072),
+                SaveToVariable = "buttonLocation1",
             },
             new()
             {
                 EventType = MarcoEvent.MarcoEventType.MouseMoveEvent,
-                RefKey = "buttonLocation1",
+                LoadFromVariable = "buttonLocation1",
             },
             new()
             {

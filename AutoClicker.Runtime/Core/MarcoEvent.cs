@@ -21,6 +21,8 @@ namespace AutoClicker.Runtime.Core
 {
     public class MarcoEvent
     {
+        public static int DefaultDelayBefore = 0;
+        public static int DefaultDelayAfter = 100;
         public enum MarcoEventType
         {
             EmptyEvent,
@@ -108,14 +110,15 @@ namespace AutoClicker.Runtime.Core
         public int MouseMoveX { get; set; }
         public int MouseMoveY { get; set; }
         public int DelayBefore { get; set; } = 0;
-        public int DelayAfter { get; set; } = 100;
+        public int DelayAfter { get; set; } = DefaultDelayAfter;
         public int Repeat { get; set; } = 1;
         public string WindowName { get; set; }
         public string ImageFilePath { get; set; }
-        public double ImageMinSimilarity { get; set; } = 0.9;
+        public double ImageMinSimilarity { get; set; } = 0.85;
         public Rectangle? ImageSearchingArea { get; set; }
-        public string RefKey { get; set; }
-        public string ResultKey { get; set; }
+        public string LoadFromVariable { get; set; }
+        public string SaveToVariable { get; set; }
+        public bool SkipIfVariableAlreadyExist { get; set; } = false;
         public bool ShowInLogger { get; set; } = false;
 
         public int layer { get; set; } = 0;
@@ -187,10 +190,10 @@ namespace AutoClicker.Runtime.Core
                             BringToFront(marcoEvent.WindowName);
                             break;
                         case MarcoEventType.MouseMoveEvent:
-                            if (!string.IsNullOrEmpty(marcoEvent.RefKey))
+                            if (!string.IsNullOrEmpty(marcoEvent.LoadFromVariable))
                             {
-                                marcoEvent.MouseMoveX = ((Point)runtimeDatabase[marcoEvent.RefKey]).X;
-                                marcoEvent.MouseMoveY = ((Point)runtimeDatabase[marcoEvent.RefKey]).Y;
+                                marcoEvent.MouseMoveX = ((Point)runtimeDatabase[marcoEvent.LoadFromVariable]).X;
+                                marcoEvent.MouseMoveY = ((Point)runtimeDatabase[marcoEvent.LoadFromVariable]).Y;
                             }
                             inputSimulator.Mouse.MoveMouseTo(marcoEvent.MouseMoveX / screenWidth * 65535, marcoEvent.MouseMoveY / screenHeight * 65535);
                             if (marcoEvent.ShowInLogger) LogWriteLine($"Move mouse to {marcoEvent.MouseMoveX} {marcoEvent.MouseMoveY}");
@@ -298,6 +301,8 @@ namespace AutoClicker.Runtime.Core
                             }
                             else
                             {
+                                if (marcoEvent.SkipIfVariableAlreadyExist == true && !string.IsNullOrEmpty(marcoEvent.SaveToVariable) && runtimeDatabase.ContainsKey(marcoEvent.SaveToVariable)) break;
+
                                 var hwnd = HwndInterface.GetHwndFromTitle(marcoEvent.WindowName);
                                 if (hwnd == 0x0000000000000000)
                                 {
@@ -323,7 +328,7 @@ namespace AutoClicker.Runtime.Core
                             try
                             {
                                 var searchResult = ScreenHelper.FindImageInRectangle(rectangle, marcoEvent.ImageFilePath, marcoEvent.ImageMinSimilarity);
-                                if (!string.IsNullOrEmpty(marcoEvent.ResultKey)) runtimeDatabase[marcoEvent.ResultKey] = searchResult;
+                                if (!string.IsNullOrEmpty(marcoEvent.SaveToVariable)) runtimeDatabase[marcoEvent.SaveToVariable] = searchResult;
                                 if (marcoEvent.ShowInLogger) LogWriteLine($"Image found at  {searchResult.X} {searchResult.Y}");
                             }
                             catch (ImageNotFoundException ex)
@@ -371,7 +376,7 @@ namespace AutoClicker.Runtime.Core
         public override string ToString()
         {
             string result = string.Empty;
-            if (DelayBefore != 0)
+            if (DelayBefore != DefaultDelayBefore)
             {
                 for (int i = 0; i < layer; i++) result += "\t";
                 result += $"DelayBefore: {DelayBefore} ms \n";
@@ -404,10 +409,10 @@ namespace AutoClicker.Runtime.Core
                     break;
             }
 
-            if (!string.IsNullOrWhiteSpace(RefKey)) result += $" - RefKey:{RefKey}";
-            if (!string.IsNullOrWhiteSpace(ResultKey)) result += $" - ResultKey:{ResultKey}";
+            //if (!string.IsNullOrWhiteSpace(LoadFromVariable)) result += $" - RefKey:{LoadFromVariable}";
+            //if (!string.IsNullOrWhiteSpace(SaveToVariable)) result += $" - ResultKey:{SaveToVariable}";
 
-            if (DelayAfter != 0)
+            if (DelayAfter != DefaultDelayAfter)
             {
                 result += $"\n";
                 for (int i = 0; i < layer; i++) result += "\t";

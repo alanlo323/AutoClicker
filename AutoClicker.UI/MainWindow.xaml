@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:AutoClicker.UI"
         xmlns:Script="clr-namespace:AutoClicker.UI.Script" xmlns:Collections="clr-namespace:System.Collections;assembly=System.Runtime" x:Class="AutoClicker.UI.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="810" Width="1100">
+        Title="Auto Clicker" Height="810" Width="1100" Icon="/icon.png">
     <Grid x:Name="gridMain" Background="#FF1F1F1F" Margin="0,0,0,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="206*"/>
@@ -31,7 +31,7 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <WrapPanel>
-                            <Label Content="{Binding PropertyName}" Width="100" HorizontalAlignment="Center"/>
+                            <Label Content="{Binding PropertyName}" Width="120" HorizontalAlignment="Center"/>
                             <TextBox Text="{Binding PropertyValue}" MinWidth="100" HorizontalAlignment="Center" VerticalAlignment="Center" Background="LightGray"/>
                         </WrapPanel>
                     </DataTemplate>

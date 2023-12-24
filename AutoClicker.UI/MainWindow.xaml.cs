@@ -107,7 +107,7 @@ namespace AutoClicker.UI
                         dataSource.Add(new()
                         {
                             RefObject = marcoEvent,
-                            PropertyInfo = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.RefKey))
+                            PropertyInfo = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.LoadFromVariable))
                         });
                         break;
                     case MarcoEvent.MarcoEventType.MouseKeyEvent:
@@ -175,7 +175,12 @@ namespace AutoClicker.UI
                         dataSource.Add(new()
                         {
                             RefObject = marcoEvent,
-                            PropertyInfo = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.ResultKey))
+                            PropertyInfo = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.SaveToVariable))
+                        });
+                        dataSource.Add(new()
+                        {
+                            RefObject = marcoEvent,
+                            PropertyInfo = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.SkipIfVariableAlreadyExist))
                         });
                         break;
                     default:
