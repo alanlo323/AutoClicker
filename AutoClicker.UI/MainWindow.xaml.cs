@@ -33,7 +33,7 @@ namespace AutoClicker.UI
 
         private void Init()
         {
-            _scripts = [new MabinogiScript(), new TestScript(), new TestScript2(),];
+            _scripts = [new MabinogiScript(), new MabinogiScript2(), new TestScript(), new TestScript2(),];
             listBoxScriptList.ItemsSource = _scripts;
             handler = new(OnMarcoEventStatusChanged);
         }

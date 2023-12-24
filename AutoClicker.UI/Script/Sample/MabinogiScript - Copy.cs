@@ -6,9 +6,9 @@ using AutoClicker.UI.Script;
 
 namespace AutoClicker.UI.Script.Sample
 {
-    internal class MabinogiScript2 : BaseScipt
+    internal class MabinogiScriptOri : BaseScipt
     {
-        public override string Name { get; set; } = nameof(MabinogiScript);
+        public override string Name { get; set; } = nameof(MabinogiScriptOri);
         public override List<MarcoEvent> MarcoEvents
         {
             get

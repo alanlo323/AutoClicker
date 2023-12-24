@@ -184,6 +184,9 @@ namespace AutoClicker.Runtime.Core
                     catch (Exception)
                     {
                     }
+
+                    if (marcoEvent.SkipIfVariableAlreadyExist == true && !string.IsNullOrEmpty(marcoEvent.SaveToVariable) && runtimeDatabase.ContainsKey(marcoEvent.SaveToVariable)) break;
+
                     Thread.Sleep(marcoEvent.DelayBefore);
 
                     try
@@ -307,8 +310,6 @@ namespace AutoClicker.Runtime.Core
                                 }
                                 else
                                 {
-                                    if (marcoEvent.SkipIfVariableAlreadyExist == true && !string.IsNullOrEmpty(marcoEvent.SaveToVariable) && runtimeDatabase.ContainsKey(marcoEvent.SaveToVariable)) break;
-
                                     var hwnd = HwndInterface.GetHwndFromTitle(marcoEvent.WindowName);
                                     if (hwnd == 0x0000000000000000)
                                     {
@@ -340,6 +341,7 @@ namespace AutoClicker.Runtime.Core
                                 catch (ImageNotFoundException ex)
                                 {
                                     LogWriteLine(ex.Message);
+                                    throw;
                                 }
                                 break;
 

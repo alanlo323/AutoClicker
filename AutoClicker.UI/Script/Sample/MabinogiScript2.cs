@@ -7,10 +7,10 @@ using AutoClicker.UI.Script;
 
 namespace AutoClicker.UI.Script.Sample
 {
-    internal class MabinogiScript : BaseScipt
+    internal class MabinogiScript2 : BaseScipt
     {
         private List<MarcoEvent> _marcoEvents;
-        public override string Name { get; set; } = nameof(MabinogiScript);
+        public override string Name { get; set; } = nameof(MabinogiScript2);
         public override List<MarcoEvent> MarcoEvents
         {
             get
@@ -18,7 +18,7 @@ namespace AutoClicker.UI.Script.Sample
                 if (_marcoEvents != null) return _marcoEvents;
 
                 string windowName = "新瑪奇 mabinogi";
-                var maxMoneyInBag = 100 * 10_000;
+                var maxMoneyInBag = 50 * 10_000;
                 var stickPrice = 927;
                 var stickExp = stickPrice / 25;
                 var stickCount = 99;
@@ -40,87 +40,87 @@ namespace AutoClicker.UI.Script.Sample
                         ShowInLogger = true,
                         Repeat = Math.Min(Math.Max(maxMoneyInBag / (stickTotalPrice * stickLoopCount), 1), maxExpPerWeek / (stickExp * stickCount)),
                         SubEvents = [
-                            new()
-                            {
-                                Name = "買棍",
-                                ShowInLogger = true,
-                                DelayBefore = 500,
-                                Repeat = stickLoopCount,
-                                SubEvents = [
-                                    new()
-                                    {
-                                        Name = "尋找圖片 - 棍",
-                                        EventType = MarcoEvent.MarcoEventType.FindImage,
-                                        WindowName = windowName,
-                                        ImageFilePath = "App_Data\\Stick.png",
-                                        ImageSearchingArea = new System.Drawing.Rectangle(3374, 0, 467, 447),
-                                        SaveToVariable = "StickLocation",
-                                        SkipIfVariableAlreadyExist = true,
-                                    },
-                                    new()
-                                    {
-                                        EventType = MarcoEvent.MarcoEventType.MouseMoveEvent,
-                                        LoadFromVariable = "StickLocation",
-                                    },
-                                    new()
-                                    {
-                                        EventType = MarcoEvent.MarcoEventType.MouseKeyEvent,
-                                        MouseKey = MarcoEvent.MouseKeyType.LeftKey,
-                                        KeyEvent = MarcoEvent.KeyEventType.Press
-                                    },
-                                    new()
-                                    {
-                                        EventType = MarcoEvent.MarcoEventType.MouseMoveEvent,
-                                        MouseMoveX = 0,
-                                        MouseMoveY = 0,
-                                        DelayAfter = 100,
-                                    },
-                                    new()
-                                    {
-                                        Name = "尋找圖片 - 右箭嘴",
-                                        EventType = MarcoEvent.MarcoEventType.FindImage,
-                                        WindowName = windowName,
-                                        ImageFilePath = "App_Data\\DoubleRightArrow.png",
-                                        ImageSearchingArea = new System.Drawing.Rectangle(3321, 0, 344, 508),
-                                        SaveToVariable = "DoubleRightArrowLocation",
-                                        SkipIfVariableAlreadyExist = true,
-                                    },
-                                    new()
-                                    {
-                                        EventType = MarcoEvent.MarcoEventType.MouseMoveEvent,
-                                        LoadFromVariable = "DoubleRightArrowLocation",
-                                    },
-                                    new()
-                                    {
-                                        EventType = MarcoEvent.MarcoEventType.MouseKeyEvent,
-                                        MouseKey = MarcoEvent.MouseKeyType.LeftKey,
-                                        KeyEvent = MarcoEvent.KeyEventType.Press,
-                                        DelayAfter = 10,
-                                        Repeat = 10,
-                                    },
-                                    new()
-                                    {
-                                        Name = "尋找圖片 - 購買",
-                                        EventType = MarcoEvent.MarcoEventType.FindImage,
-                                        WindowName = windowName,
-                                        ImageFilePath = "App_Data\\Buy.png",
-                                        ImageSearchingArea = new System.Drawing.Rectangle(3321, 0, 344, 508),
-                                        SaveToVariable = "BuyButtonLocation",
-                                        SkipIfVariableAlreadyExist = true,
-                                    },
-                                    new()
-                                    {
-                                        EventType = MarcoEvent.MarcoEventType.MouseMoveEvent,
-                                        LoadFromVariable = "BuyButtonLocation",
-                                    },
-                                    new()
-                                    {
-                                        EventType = MarcoEvent.MarcoEventType.MouseKeyEvent,
-                                        MouseKey = MarcoEvent.MouseKeyType.LeftKey,
-                                        KeyEvent = MarcoEvent.KeyEventType.Press
-                                    },
-                                ],
-                            },
+                            //new()
+                            //{
+                            //    Name = "買棍",
+                            //    ShowInLogger = true,
+                            //    DelayBefore = 500,
+                            //    Repeat = stickLoopCount,
+                            //    SubEvents = [
+                            //        new()
+                            //        {
+                            //            Name = "尋找圖片 - 棍",
+                            //            EventType = MarcoEvent.MarcoEventType.FindImage,
+                            //            WindowName = windowName,
+                            //            ImageFilePath = "App_Data\\Stick.png",
+                            //            ImageSearchingArea = new System.Drawing.Rectangle(3374, 0, 467, 447),
+                            //            SaveToVariable = "StickLocation",
+                            //            SkipIfVariableAlreadyExist = true,
+                            //        },
+                            //        new()
+                            //        {
+                            //            EventType = MarcoEvent.MarcoEventType.MouseMoveEvent,
+                            //            LoadFromVariable = "StickLocation",
+                            //        },
+                            //        new()
+                            //        {
+                            //            EventType = MarcoEvent.MarcoEventType.MouseKeyEvent,
+                            //            MouseKey = MarcoEvent.MouseKeyType.LeftKey,
+                            //            KeyEvent = MarcoEvent.KeyEventType.Press
+                            //        },
+                            //        new()
+                            //        {
+                            //            EventType = MarcoEvent.MarcoEventType.MouseMoveEvent,
+                            //            MouseMoveX = 0,
+                            //            MouseMoveY = 0,
+                            //            DelayAfter = 100,
+                            //        },
+                            //        new()
+                            //        {
+                            //            Name = "尋找圖片 - 右箭嘴",
+                            //            EventType = MarcoEvent.MarcoEventType.FindImage,
+                            //            WindowName = windowName,
+                            //            ImageFilePath = "App_Data\\DoubleRightArrow.png",
+                            //            ImageSearchingArea = new System.Drawing.Rectangle(3321, 0, 344, 508),
+                            //            SaveToVariable = "DoubleRightArrowLocation",
+                            //            SkipIfVariableAlreadyExist = true,
+                            //        },
+                            //        new()
+                            //        {
+                            //            EventType = MarcoEvent.MarcoEventType.MouseMoveEvent,
+                            //            LoadFromVariable = "DoubleRightArrowLocation",
+                            //        },
+                            //        new()
+                            //        {
+                            //            EventType = MarcoEvent.MarcoEventType.MouseKeyEvent,
+                            //            MouseKey = MarcoEvent.MouseKeyType.LeftKey,
+                            //            KeyEvent = MarcoEvent.KeyEventType.Press,
+                            //            DelayAfter = 10,
+                            //            Repeat = 10,
+                            //        },
+                            //        new()
+                            //        {
+                            //            Name = "尋找圖片 - 購買",
+                            //            EventType = MarcoEvent.MarcoEventType.FindImage,
+                            //            WindowName = windowName,
+                            //            ImageFilePath = "App_Data\\Buy.png",
+                            //            ImageSearchingArea = new System.Drawing.Rectangle(3321, 0, 344, 508),
+                            //            SaveToVariable = "BuyButtonLocation",
+                            //            SkipIfVariableAlreadyExist = true,
+                            //        },
+                            //        new()
+                            //        {
+                            //            EventType = MarcoEvent.MarcoEventType.MouseMoveEvent,
+                            //            LoadFromVariable = "BuyButtonLocation",
+                            //        },
+                            //        new()
+                            //        {
+                            //            EventType = MarcoEvent.MarcoEventType.MouseKeyEvent,
+                            //            MouseKey = MarcoEvent.MouseKeyType.LeftKey,
+                            //            KeyEvent = MarcoEvent.KeyEventType.Press
+                            //        },
+                            //    ],
+                            //},
                             new()
                             {
                                 Name = "切換至其他",

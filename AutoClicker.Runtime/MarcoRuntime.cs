@@ -21,14 +21,7 @@ namespace AutoClicker.Runtime
         {
             foreach (MarcoEvent marcoEvent in marcoEvents)
             {
-                try
-                {
-                    await marcoEvent.Excute(runtimeDatabase, handler);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
+                await marcoEvent.Excute(runtimeDatabase, handler);
             }
         }
     }
