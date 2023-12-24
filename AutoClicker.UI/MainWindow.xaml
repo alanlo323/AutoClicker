@@ -6,7 +6,16 @@
         xmlns:local="clr-namespace:AutoClicker.UI"
         xmlns:Script="clr-namespace:AutoClicker.UI.Script" xmlns:Collections="clr-namespace:System.Collections;assembly=System.Runtime" x:Class="AutoClicker.UI.MainWindow"
         mc:Ignorable="d"
-        Title="Auto Clicker" Height="810" Width="1100" Icon="/icon.png">
+        Title="Auto Clicker" Height="810" Width="1100" Icon="/icon.png" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style x:Key="ListBoxScriptContectStyle"  TargetType="{x:Type ListBoxItem}">
+            <Style.Triggers>
+                <DataTrigger Binding ="{Binding IsRunning}" Value="true">
+                    <Setter Property="Background" Value="LightYellow"></Setter>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <Grid x:Name="gridMain" Background="#FF1F1F1F" Margin="0,0,0,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="206*"/>
@@ -19,7 +28,7 @@
             <TabItem x:Name="TabItemScript" Header="Script" OpacityMask="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}" Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}">
                 <Grid Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}">
                     <ListBox x:Name="listBoxScriptList" HorizontalAlignment="Left" Height="639" Margin="10,0,0,0" VerticalAlignment="Center" Width="167" d:ItemsSource="{d:SampleData ItemCount=5}" Background="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}" IsSynchronizedWithCurrentItem="True" SelectionChanged="listBoxScriptList_SelectionChanged"/>
-                    <ListBox x:Name="listBoxScriptContect" HorizontalAlignment="Left" Height="639" Margin="188,0,0,0" VerticalAlignment="Center" Width="576" d:ItemsSource="{d:SampleData ItemCount=5}" Background="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}" SelectionChanged="listBoxScriptContect_SelectionChanged"/>
+                    <ListBox x:Name="listBoxScriptContect"  ItemContainerStyle="{StaticResource ListBoxScriptContectStyle}" HorizontalAlignment="Left" Height="639" Margin="188,0,0,0" VerticalAlignment="Center" Width="576" d:ItemsSource="{d:SampleData ItemCount=5}" Background="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}" SelectionChanged="listBoxScriptContect_SelectionChanged"/>
                 </Grid>
             </TabItem>
             <TabItem x:Name="TabItemSetting" Header="Setting" Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}">

@@ -18,7 +18,7 @@ namespace AutoClicker.UI.Script.Sample
                 if (_marcoEvents != null) return _marcoEvents;
 
                 string windowName = "新瑪奇 mabinogi";
-                var maxMoneyInBag = 200 * 10_000;
+                var maxMoneyInBag = 70 * 10_000;
                 var stickPrice = 927;
                 var stickExp = stickPrice / 25;
                 var stickCount = 99;

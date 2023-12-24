@@ -8,10 +8,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using AutoClicker.Runtime;
 using AutoClicker.Runtime.Core;
 using AutoClicker.UI.Script;
 using AutoClicker.UI.Script.Sample;
+using static AutoClicker.Runtime.Core.MarcoEvent;
 
 namespace AutoClicker.UI
 {
@@ -21,6 +23,8 @@ namespace AutoClicker.UI
     public partial class MainWindow : Window
     {
         private List<BaseScipt> _scripts = [];
+        private MarcoEventStatusChangedEventHandler handler;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -29,8 +33,17 @@ namespace AutoClicker.UI
 
         private void Init()
         {
-            _scripts = [new TestScript(), new MabinogiScript()];
+            _scripts = [new MabinogiScript(), new TestScript(), new TestScript2(),];
             listBoxScriptList.ItemsSource = _scripts;
+            handler = new(OnMarcoEventStatusChanged);
+        }
+
+        private void OnMarcoEventStatusChanged(MarcoEvent marcoEvent)
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                listBoxScriptContect.Items.Refresh();
+            }));
         }
 
         private void btnRun_Click(object sender, RoutedEventArgs e)
@@ -40,7 +53,22 @@ namespace AutoClicker.UI
                 try
                 {
                     MarcoRuntime runtime = new();
-                    runtime.RunMarco(script.MarcoEvents);
+                    Thread thread = new(
+                        new ThreadStart(
+                            async delegate ()
+                            {
+                                await runtime.RunMarco(script.MarcoEvents, handler);
+
+                                await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal,
+                                      new Action(() =>
+                                      {
+                                          // here we are back in the UI thread
+
+                                          // do stuff here that needs to update the UI after the operation finished
+                                      }));
+                            }
+                        ));
+                    thread.Start();
                 }
                 catch (Exception ex)
                 {

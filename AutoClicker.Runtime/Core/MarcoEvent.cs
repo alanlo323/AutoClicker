@@ -21,8 +21,9 @@ namespace AutoClicker.Runtime.Core
 {
     public class MarcoEvent
     {
-        public static int DefaultDelayBefore = 0;
-        public static int DefaultDelayAfter = 100;
+        private const int DefaultDelayBefore = 0;
+        private const int DefaultDelayAfter = 100;
+
         public enum MarcoEventType
         {
             EmptyEvent,
@@ -121,7 +122,8 @@ namespace AutoClicker.Runtime.Core
         public bool SkipIfVariableAlreadyExist { get; set; } = false;
         public bool ShowInLogger { get; set; } = false;
 
-        public int layer { get; set; } = 0;
+        public int Layer { get; set; } = 0;
+        public bool IsRunning { get; set; } = false;
 
         [DllImport("USER32.DLL", CharSet = CharSet.Unicode)]
         public static extern nint FindWindow(string lpClassName, string lpWindowName);
@@ -146,222 +148,235 @@ namespace AutoClicker.Runtime.Core
 
         public void LogWriteLine(string message)
         {
-            Console.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff")} | {message}");
-            Debug.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff")} | {message}");
+            Console.WriteLine($"{DateTime.Now:MM/dd/yyyy hh:mm:ss.fff} | {message}");
+            Debug.WriteLine($"{DateTime.Now:MM/dd/yyyy hh:mm:ss.fff} | {message}");
         }
 
-        public void Excute(Dictionary<object, object> runtimeDatabase)
+        public async Task Excute(Dictionary<object, object> runtimeDatabase, MarcoEventStatusChangedEventHandler handler)
         {
-            if (runtimeDatabase == null) runtimeDatabase = RuntimeDatabase.Default;
-            MarcoEvent marcoEvent = this;
-            InputSimulator inputSimulator = new();
-
-            var resolution = ScreenHelper.GetDisplayResolution();
-            double screenWidth = resolution.Width;
-            double screenHeight = resolution.Height;
-
-            for (int i = 0; i < marcoEvent.Repeat; i++)
+            IsRunning = true;
+            handler(this);
+            try
             {
-                try
+                runtimeDatabase ??= RuntimeDatabase.Default;
+                MarcoEvent marcoEvent = this;
+                InputSimulator inputSimulator = new();
+
+                var resolution = ScreenHelper.GetDisplayResolution();
+                double screenWidth = resolution.Width;
+                double screenHeight = resolution.Height;
+
+                for (int i = 0; i < marcoEvent.Repeat; i++)
                 {
-                    if (!string.IsNullOrEmpty(marcoEvent.Name))
+                    try
                     {
-                        string msg = $"{marcoEvent.Name}";
-                        if (marcoEvent.Repeat > 1)
+                        if (!string.IsNullOrEmpty(marcoEvent.Name))
                         {
-                            msg += $" {i + 1}/{marcoEvent.Repeat}";
+                            string msg = $"{marcoEvent.Name}";
+                            if (marcoEvent.Repeat > 1)
+                            {
+                                msg += $" {i + 1}/{marcoEvent.Repeat}";
+                            }
+                            if (marcoEvent.ShowInLogger) LogWriteLine(msg);
                         }
-                        if (marcoEvent.ShowInLogger) LogWriteLine(msg);
+
                     }
-
-                }
-                catch (Exception)
-                {
-                }
-                Thread.Sleep(marcoEvent.DelayBefore);
-
-                try
-                {
-                    #region Event logit
-                    switch (marcoEvent.EventType)
+                    catch (Exception)
                     {
-                        case MarcoEventType.FocusWindow:
-                            if (marcoEvent.ShowInLogger) LogWriteLine($"Focus window {marcoEvent.WindowName}");
-                            BringToFront(marcoEvent.WindowName);
-                            break;
-                        case MarcoEventType.MouseMoveEvent:
-                            if (!string.IsNullOrEmpty(marcoEvent.LoadFromVariable))
-                            {
-                                marcoEvent.MouseMoveX = ((Point)runtimeDatabase[marcoEvent.LoadFromVariable]).X;
-                                marcoEvent.MouseMoveY = ((Point)runtimeDatabase[marcoEvent.LoadFromVariable]).Y;
-                            }
-                            inputSimulator.Mouse.MoveMouseTo(marcoEvent.MouseMoveX / screenWidth * 65535, marcoEvent.MouseMoveY / screenHeight * 65535);
-                            if (marcoEvent.ShowInLogger) LogWriteLine($"Move mouse to {marcoEvent.MouseMoveX} {marcoEvent.MouseMoveY}");
-                            break;
-                        case MarcoEventType.MouseKeyEvent:
-                            switch (marcoEvent.MouseKey)
-                            {
-                                case MouseKeyType.LeftKey:
-                                    switch (marcoEvent.KeyEvent)
-                                    {
-                                        case KeyEventType.Down:
-                                            inputSimulator.Mouse.LeftButtonDown();
-                                            if (marcoEvent.ShowInLogger) LogWriteLine($"Left mouse down");
-                                            break;
+                    }
+                    Thread.Sleep(marcoEvent.DelayBefore);
 
-                                        case KeyEventType.Up:
-                                            inputSimulator.Mouse.LeftButtonUp();
-                                            if (marcoEvent.ShowInLogger) LogWriteLine($"Left mouse up");
-                                            break;
-
-                                        case KeyEventType.Press:
-                                            inputSimulator.Mouse.LeftButtonClick();
-                                            if (marcoEvent.ShowInLogger) LogWriteLine($"Left mouse click");
-                                            break;
-
-                                        default:
-                                            break;
-                                    }
-                                    break;
-
-                                case MouseKeyType.MiddleKey:
-                                    switch (marcoEvent.KeyEvent)
-                                    {
-                                        case KeyEventType.Down:
-                                            if (marcoEvent.ShowInLogger) LogWriteLine($"Middle mouse up");
-                                            break;
-
-                                        case KeyEventType.Up:
-                                            if (marcoEvent.ShowInLogger) LogWriteLine($"Middle mouse down");
-                                            break;
-
-                                        case KeyEventType.Press:
-                                            if (marcoEvent.ShowInLogger) LogWriteLine($"Middle mouse click");
-                                            break;
-
-                                        default:
-                                            break;
-                                    }
-                                    break;
-
-                                case MouseKeyType.RightKey:
-                                    switch (marcoEvent.KeyEvent)
-                                    {
-                                        case KeyEventType.Down:
-                                            inputSimulator.Mouse.RightButtonDown();
-                                            if (marcoEvent.ShowInLogger) LogWriteLine($"Right mouse up");
-                                            break;
-
-                                        case KeyEventType.Up:
-                                            inputSimulator.Mouse.RightButtonUp();
-                                            if (marcoEvent.ShowInLogger) LogWriteLine($"Right mouse down");
-                                            break;
-
-                                        case KeyEventType.Press:
-                                            inputSimulator.Mouse.RightButtonClick();
-                                            if (marcoEvent.ShowInLogger) LogWriteLine($"Right mouse click");
-                                            break;
-
-                                        default:
-                                            break;
-                                    }
-                                    break;
-
-                                default:
-                                    break;
-                            }
-                            break;
-                        case MarcoEventType.KeyboardEvent:
-                            switch (marcoEvent.KeyEvent)
-                            {
-                                case KeyEventType.Down:
-                                    inputSimulator.Keyboard.KeyDown(marcoEvent.KeyboardKey);
-                                    if (marcoEvent.ShowInLogger) LogWriteLine($"Key {marcoEvent.KeyboardKey} down");
-                                    break;
-
-                                case KeyEventType.Up:
-                                    inputSimulator.Keyboard.KeyUp(marcoEvent.KeyboardKey);
-                                    if (marcoEvent.ShowInLogger) LogWriteLine($"Key {marcoEvent.KeyboardKey} up");
-                                    break;
-
-                                case KeyEventType.Press:
-                                    inputSimulator.Keyboard.KeyPress(marcoEvent.KeyboardKey);
-                                    if (marcoEvent.ShowInLogger) LogWriteLine($"Key {marcoEvent.KeyboardKey} press");
-                                    break;
-
-                                default:
-                                    break;
-                            }
-                            break;
-                        case MarcoEventType.FindImage:
-                            Rectangle rectangle;
-                            if (string.IsNullOrEmpty(marcoEvent.WindowName))
-                            {
-                                rectangle = new(0, 0, (int)screenWidth, (int)screenHeight);
-                            }
-                            else
-                            {
-                                if (marcoEvent.SkipIfVariableAlreadyExist == true && !string.IsNullOrEmpty(marcoEvent.SaveToVariable) && runtimeDatabase.ContainsKey(marcoEvent.SaveToVariable)) break;
-
-                                var hwnd = HwndInterface.GetHwndFromTitle(marcoEvent.WindowName);
-                                if (hwnd == 0x0000000000000000)
-                                {
-                                    LogWriteLine($"Window {marcoEvent.WindowName} not found"); break;
-                                }
-                                var pos = HwndInterface.GetHwndPos(hwnd);
-                                var size = HwndInterface.GetHwndSize(hwnd);
-                                var factor = ScreenHelper.GetWindowsScreenScalingFactor(false);
-                                rectangle = new((int)(pos.X * factor), (int)(pos.Y * factor), size.Width, size.Height);
+                    try
+                    {
+                        #region Event logit
+                        switch (marcoEvent.EventType)
+                        {
+                            case MarcoEventType.FocusWindow:
+                                if (marcoEvent.ShowInLogger) LogWriteLine($"Focus window {marcoEvent.WindowName}");
                                 BringToFront(marcoEvent.WindowName);
-                                Thread.Sleep(50);
-                            }
-                            if (marcoEvent.ImageSearchingArea.HasValue)
-                            {
-                                if (marcoEvent.ImageSearchingArea?.X != 0) rectangle.X += Math.Min((int)resolution.Width, (int)marcoEvent.ImageSearchingArea?.X);
-                                if (marcoEvent.ImageSearchingArea?.Y != 0) rectangle.Y += Math.Min((int)resolution.Width, (int)marcoEvent.ImageSearchingArea?.Y);
-                                if (marcoEvent.ImageSearchingArea?.Width != 0) rectangle.Width = (int)marcoEvent.ImageSearchingArea?.Width;
-                                if (marcoEvent.ImageSearchingArea?.Height != 0) rectangle.Height = (int)marcoEvent.ImageSearchingArea?.Height;
-                                rectangle.Width = Math.Min((int)resolution.Width - rectangle.X, rectangle.Width);
-                                rectangle.Height = Math.Min((int)resolution.Height - rectangle.Y, rectangle.Height);
-                            }
+                                break;
+                            case MarcoEventType.MouseMoveEvent:
+                                if (!string.IsNullOrEmpty(marcoEvent.LoadFromVariable))
+                                {
+                                    marcoEvent.MouseMoveX = ((Point)runtimeDatabase[marcoEvent.LoadFromVariable]).X;
+                                    marcoEvent.MouseMoveY = ((Point)runtimeDatabase[marcoEvent.LoadFromVariable]).Y;
+                                }
+                                inputSimulator.Mouse.MoveMouseTo(marcoEvent.MouseMoveX / screenWidth * 65535, marcoEvent.MouseMoveY / screenHeight * 65535);
+                                if (marcoEvent.ShowInLogger) LogWriteLine($"Move mouse to {marcoEvent.MouseMoveX} {marcoEvent.MouseMoveY}");
+                                break;
+                            case MarcoEventType.MouseKeyEvent:
+                                switch (marcoEvent.MouseKey)
+                                {
+                                    case MouseKeyType.LeftKey:
+                                        switch (marcoEvent.KeyEvent)
+                                        {
+                                            case KeyEventType.Down:
+                                                inputSimulator.Mouse.LeftButtonDown();
+                                                if (marcoEvent.ShowInLogger) LogWriteLine($"Left mouse down");
+                                                break;
 
-                            try
-                            {
-                                var searchResult = ScreenHelper.FindImageInRectangle(rectangle, marcoEvent.ImageFilePath, marcoEvent.ImageMinSimilarity);
-                                if (!string.IsNullOrEmpty(marcoEvent.SaveToVariable)) runtimeDatabase[marcoEvent.SaveToVariable] = searchResult;
-                                if (marcoEvent.ShowInLogger) LogWriteLine($"Image found at  {searchResult.X} {searchResult.Y}");
-                            }
-                            catch (ImageNotFoundException ex)
-                            {
-                                LogWriteLine(ex.Message);
-                            }
-                            break;
+                                            case KeyEventType.Up:
+                                                inputSimulator.Mouse.LeftButtonUp();
+                                                if (marcoEvent.ShowInLogger) LogWriteLine($"Left mouse up");
+                                                break;
 
-                        default:
-                            break;
-                    }
-                    #endregion
+                                            case KeyEventType.Press:
+                                                inputSimulator.Mouse.LeftButtonClick();
+                                                if (marcoEvent.ShowInLogger) LogWriteLine($"Left mouse click");
+                                                break;
 
-                    if (marcoEvent.SubEvents != null)
-                    {
-                        foreach (MarcoEvent subEvent in marcoEvent.SubEvents)
+                                            default:
+                                                break;
+                                        }
+                                        break;
+
+                                    case MouseKeyType.MiddleKey:
+                                        switch (marcoEvent.KeyEvent)
+                                        {
+                                            case KeyEventType.Down:
+                                                if (marcoEvent.ShowInLogger) LogWriteLine($"Middle mouse up");
+                                                break;
+
+                                            case KeyEventType.Up:
+                                                if (marcoEvent.ShowInLogger) LogWriteLine($"Middle mouse down");
+                                                break;
+
+                                            case KeyEventType.Press:
+                                                if (marcoEvent.ShowInLogger) LogWriteLine($"Middle mouse click");
+                                                break;
+
+                                            default:
+                                                break;
+                                        }
+                                        break;
+
+                                    case MouseKeyType.RightKey:
+                                        switch (marcoEvent.KeyEvent)
+                                        {
+                                            case KeyEventType.Down:
+                                                inputSimulator.Mouse.RightButtonDown();
+                                                if (marcoEvent.ShowInLogger) LogWriteLine($"Right mouse up");
+                                                break;
+
+                                            case KeyEventType.Up:
+                                                inputSimulator.Mouse.RightButtonUp();
+                                                if (marcoEvent.ShowInLogger) LogWriteLine($"Right mouse down");
+                                                break;
+
+                                            case KeyEventType.Press:
+                                                inputSimulator.Mouse.RightButtonClick();
+                                                if (marcoEvent.ShowInLogger) LogWriteLine($"Right mouse click");
+                                                break;
+
+                                            default:
+                                                break;
+                                        }
+                                        break;
+
+                                    default:
+                                        break;
+                                }
+                                break;
+                            case MarcoEventType.KeyboardEvent:
+                                switch (marcoEvent.KeyEvent)
+                                {
+                                    case KeyEventType.Down:
+                                        inputSimulator.Keyboard.KeyDown(marcoEvent.KeyboardKey);
+                                        if (marcoEvent.ShowInLogger) LogWriteLine($"Key {marcoEvent.KeyboardKey} down");
+                                        break;
+
+                                    case KeyEventType.Up:
+                                        inputSimulator.Keyboard.KeyUp(marcoEvent.KeyboardKey);
+                                        if (marcoEvent.ShowInLogger) LogWriteLine($"Key {marcoEvent.KeyboardKey} up");
+                                        break;
+
+                                    case KeyEventType.Press:
+                                        inputSimulator.Keyboard.KeyPress(marcoEvent.KeyboardKey);
+                                        if (marcoEvent.ShowInLogger) LogWriteLine($"Key {marcoEvent.KeyboardKey} press");
+                                        break;
+
+                                    default:
+                                        break;
+                                }
+                                break;
+                            case MarcoEventType.FindImage:
+                                Rectangle rectangle;
+                                if (string.IsNullOrEmpty(marcoEvent.WindowName))
+                                {
+                                    rectangle = new(0, 0, (int)screenWidth, (int)screenHeight);
+                                }
+                                else
+                                {
+                                    if (marcoEvent.SkipIfVariableAlreadyExist == true && !string.IsNullOrEmpty(marcoEvent.SaveToVariable) && runtimeDatabase.ContainsKey(marcoEvent.SaveToVariable)) break;
+
+                                    var hwnd = HwndInterface.GetHwndFromTitle(marcoEvent.WindowName);
+                                    if (hwnd == 0x0000000000000000)
+                                    {
+                                        LogWriteLine($"Window {marcoEvent.WindowName} not found"); break;
+                                    }
+                                    var pos = HwndInterface.GetHwndPos(hwnd);
+                                    var size = HwndInterface.GetHwndSize(hwnd);
+                                    var factor = ScreenHelper.GetWindowsScreenScalingFactor(false);
+                                    rectangle = new((int)(pos.X * factor), (int)(pos.Y * factor), size.Width, size.Height);
+                                    BringToFront(marcoEvent.WindowName);
+                                    Thread.Sleep(50);
+                                }
+                                if (marcoEvent.ImageSearchingArea.HasValue)
+                                {
+                                    if (marcoEvent.ImageSearchingArea?.X != 0) rectangle.X += Math.Min((int)resolution.Width, (int)marcoEvent.ImageSearchingArea?.X);
+                                    if (marcoEvent.ImageSearchingArea?.Y != 0) rectangle.Y += Math.Min((int)resolution.Width, (int)marcoEvent.ImageSearchingArea?.Y);
+                                    if (marcoEvent.ImageSearchingArea?.Width != 0) rectangle.Width = (int)marcoEvent.ImageSearchingArea?.Width;
+                                    if (marcoEvent.ImageSearchingArea?.Height != 0) rectangle.Height = (int)marcoEvent.ImageSearchingArea?.Height;
+                                    rectangle.Width = Math.Min((int)resolution.Width - rectangle.X, rectangle.Width);
+                                    rectangle.Height = Math.Min((int)resolution.Height - rectangle.Y, rectangle.Height);
+                                }
+
+                                try
+                                {
+                                    var searchResult = ScreenHelper.FindImageInRectangle(rectangle, marcoEvent.ImageFilePath, marcoEvent.ImageMinSimilarity);
+                                    if (!string.IsNullOrEmpty(marcoEvent.SaveToVariable)) runtimeDatabase[marcoEvent.SaveToVariable] = searchResult;
+                                    if (marcoEvent.ShowInLogger) LogWriteLine($"Image found at  {searchResult.X} {searchResult.Y}");
+                                }
+                                catch (ImageNotFoundException ex)
+                                {
+                                    LogWriteLine(ex.Message);
+                                }
+                                break;
+
+                            default:
+                                break;
+                        }
+                        #endregion
+
+                        if (marcoEvent.SubEvents != null)
                         {
-                            subEvent.Excute(runtimeDatabase);
+                            foreach (MarcoEvent subEvent in marcoEvent.SubEvents)
+                            {
+                                await subEvent.Excute(runtimeDatabase, handler);
+                            }
                         }
                     }
-                }
-                catch (Exception)
-                {
-                }
+                    catch (Exception)
+                    {
+                    }
 
-                Thread.Sleep(marcoEvent.DelayAfter);
+                    Thread.Sleep(marcoEvent.DelayAfter);
+                }
             }
-
+            catch (Exception ex)
+            {
+                LogWriteLine(ex.Message);
+            }
+            finally
+            {
+                IsRunning = false;
+                handler(this);
+            }
         }
 
         public List<MarcoEvent> GetAllSubEvents(int layer = 0)
         {
-            this.layer = layer;
+            this.Layer = layer;
             List<MarcoEvent> result = [this];
             if (SubEvents != null)
             {
@@ -373,15 +388,18 @@ namespace AutoClicker.Runtime.Core
             return result;
         }
 
+        public delegate void MarcoEventStatusChangedEventHandler(MarcoEvent sender);
+
+        public string _ToString { get => ToString(); }
         public override string ToString()
         {
             string result = string.Empty;
             if (DelayBefore != DefaultDelayBefore)
             {
-                for (int i = 0; i < layer; i++) result += "\t";
+                for (int i = 0; i < Layer; i++) result += "\t";
                 result += $"DelayBefore: {DelayBefore} ms \n";
             }
-            for (int i = 0; i < layer; i++) result += "\t";
+            for (int i = 0; i < Layer; i++) result += "\t";
             if (!string.IsNullOrWhiteSpace(Name)) result += $"[{Name}] ";
             result += $"{EventType}";
             if (Repeat != 1) result += $" - Repeat:{Repeat}";
@@ -415,7 +433,7 @@ namespace AutoClicker.Runtime.Core
             if (DelayAfter != DefaultDelayAfter)
             {
                 result += $"\n";
-                for (int i = 0; i < layer; i++) result += "\t";
+                for (int i = 0; i < Layer; i++) result += "\t";
                 result += $"DelayAfter: {DelayAfter} ms";
             }
             return result;

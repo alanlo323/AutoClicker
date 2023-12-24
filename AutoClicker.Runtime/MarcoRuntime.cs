@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoClicker.Runtime.Core;
+using static AutoClicker.Runtime.Core.MarcoEvent;
 
 namespace AutoClicker.Runtime
 {
@@ -16,13 +17,13 @@ namespace AutoClicker.Runtime
             runtimeDatabase = Helper.RuntimeDatabase.CreateRuntimeDatabase();
         }
 
-        public void RunMarco(List<MarcoEvent> marcoEvents)
+        public async Task RunMarco(List<MarcoEvent> marcoEvents, MarcoEventStatusChangedEventHandler handler)
         {
             foreach (MarcoEvent marcoEvent in marcoEvents)
             {
                 try
                 {
-                    marcoEvent.Excute(runtimeDatabase);
+                    await marcoEvent.Excute(runtimeDatabase, handler);
                 }
                 catch (Exception ex)
                 {
