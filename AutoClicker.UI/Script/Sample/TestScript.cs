@@ -15,8 +15,9 @@ namespace AutoClicker.UI.Script.Sample
             {
                 DelayAfter = 1000,
                 EventType = MarcoEvent.MarcoEventType.FindImage,
-                WindowName = "1.jpg - 小畫家",
-                ImageFilePath = "App_Data\\1.jpg",
+                WindowName = "新瑪奇 mabinogi",
+                ImageFilePath = "App_Data\\1.png",
+                ImageSearchingArea = new System.Drawing.Rectangle(3374, 0, 467, 447),
                 ResultKey = "buttonLocation1",
             },
             new()

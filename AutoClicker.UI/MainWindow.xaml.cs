@@ -69,18 +69,23 @@ namespace AutoClicker.UI
                 List<MarcoParam> dataSource = [
                     new()
                     {
-                        MarcoEvent = marcoEvent,
-                        Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.Name))
+                        RefObject = marcoEvent,
+                        PropertyInfo = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.Name))
                     },
                     new()
                     {
-                        MarcoEvent = marcoEvent,
-                        Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.DelayBefore))
+                        RefObject = marcoEvent,
+                        PropertyInfo = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.Repeat))
                     },
                     new()
                     {
-                        MarcoEvent = marcoEvent,
-                        Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.DelayAfter))
+                        RefObject = marcoEvent,
+                        PropertyInfo = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.DelayBefore))
+                    },
+                    new()
+                    {
+                        RefObject = marcoEvent,
+                        PropertyInfo = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.DelayAfter))
                     },
                 ];
 
@@ -91,61 +96,86 @@ namespace AutoClicker.UI
                     case MarcoEvent.MarcoEventType.MouseMoveEvent:
                         dataSource.Add(new()
                         {
-                            MarcoEvent = marcoEvent,
-                            Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.MouseMoveX))
+                            RefObject = marcoEvent,
+                            PropertyInfo = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.MouseMoveX))
                         });
                         dataSource.Add(new()
                         {
-                            MarcoEvent = marcoEvent,
-                            Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.MouseMoveY))
+                            RefObject = marcoEvent,
+                            PropertyInfo = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.MouseMoveY))
                         });
                         dataSource.Add(new()
                         {
-                            MarcoEvent = marcoEvent,
-                            Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.RefKey))
+                            RefObject = marcoEvent,
+                            PropertyInfo = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.RefKey))
                         });
                         break;
                     case MarcoEvent.MarcoEventType.MouseKeyEvent:
                         dataSource.Add(new()
                         {
-                            MarcoEvent = marcoEvent,
-                            Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.MouseKey))
+                            RefObject = marcoEvent,
+                            PropertyInfo = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.MouseKey))
                         });
                         dataSource.Add(new()
                         {
-                            MarcoEvent = marcoEvent,
-                            Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.KeyEvent))
+                            RefObject = marcoEvent,
+                            PropertyInfo = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.KeyEvent))
                         });
                         break;
                     case MarcoEvent.MarcoEventType.KeyboardEvent:
                         dataSource.Add(new()
                         {
-                            MarcoEvent = marcoEvent,
-                            Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.KeyboardKey))
+                            RefObject = marcoEvent,
+                            PropertyInfo = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.KeyboardKey))
                         });
                         dataSource.Add(new()
                         {
-                            MarcoEvent = marcoEvent,
-                            Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.KeyEvent))
+                            RefObject = marcoEvent,
+                            PropertyInfo = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.KeyEvent))
                         });
                         break;
                     case MarcoEvent.MarcoEventType.FocusWindow:
                         dataSource.Add(new()
                         {
-                            MarcoEvent = marcoEvent,
-                            Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.WindowName))
+                            RefObject = marcoEvent,
+                            PropertyInfo = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.WindowName))
                         });
                         break;
                     case MarcoEvent.MarcoEventType.FindImage:
                         dataSource.Add(new()
                         {
-                            MarcoEvent = marcoEvent,
-                            Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.ImageFilePath))
+                            RefObject = marcoEvent,
+                            PropertyInfo = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.ImageFilePath))
                         });
                         dataSource.Add(new()
                         {
-                            MarcoEvent = marcoEvent,
-                            Property = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.ResultKey))
+                            RefObject = marcoEvent,
+                            PropertyInfo = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.ImageMinSimilarity))
+                        });
+                        dataSource.Add(new()
+                        {
+                            RefObject = marcoEvent.ImageSearchingArea,
+                            PropertyInfo = marcoEvent.ImageSearchingArea.GetType().GetProperty(nameof(System.Drawing.Rectangle.X))
+                        });
+                        dataSource.Add(new()
+                        {
+                            RefObject = marcoEvent.ImageSearchingArea,
+                            PropertyInfo = marcoEvent.ImageSearchingArea.GetType().GetProperty(nameof(System.Drawing.Rectangle.Y))
+                        });
+                        dataSource.Add(new()
+                        {
+                            RefObject = marcoEvent.ImageSearchingArea,
+                            PropertyInfo = marcoEvent.ImageSearchingArea.GetType().GetProperty(nameof(System.Drawing.Rectangle.Width))
+                        });
+                        dataSource.Add(new()
+                        {
+                            RefObject = marcoEvent.ImageSearchingArea,
+                            PropertyInfo = marcoEvent.ImageSearchingArea.GetType().GetProperty(nameof(System.Drawing.Rectangle.Height))
+                        });
+                        dataSource.Add(new()
+                        {
+                            RefObject = marcoEvent,
+                            PropertyInfo = marcoEvent.GetType().GetProperty(nameof(MarcoEvent.ResultKey))
                         });
                         break;
                     default:

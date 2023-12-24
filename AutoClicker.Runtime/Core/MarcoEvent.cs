@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -13,6 +14,7 @@ using Newtonsoft.Json.Converters;
 using WindowScrape.Static;
 using WindowsInput;
 using WindowsInput.Native;
+using static AutoClicker.Runtime.Helper.ScreenHelper;
 using Point = System.Drawing.Point;
 
 namespace AutoClicker.Runtime.Core
@@ -89,7 +91,7 @@ namespace AutoClicker.Runtime.Core
             RepeatNTimes
         }
 
-        public List<MarcoEvent> SubEvents { get; set; } = new List<MarcoEvent>();
+        public List<MarcoEvent> SubEvents { get; set; } = [];
 
         [JsonConverter(typeof(StringEnumConverter))]
         public MarcoEventType EventType { get; set; } = MarcoEventType.EmptyEvent;
@@ -107,9 +109,11 @@ namespace AutoClicker.Runtime.Core
         public int MouseMoveY { get; set; }
         public int DelayBefore { get; set; } = 0;
         public int DelayAfter { get; set; } = 100;
-        public int RepeatCount { get; set; } = 1;
+        public int Repeat { get; set; } = 1;
         public string WindowName { get; set; }
         public string ImageFilePath { get; set; }
+        public double ImageMinSimilarity { get; set; } = 0.9;
+        public Rectangle? ImageSearchingArea { get; set; }
         public string RefKey { get; set; }
         public string ResultKey { get; set; }
         public bool ShowInLogger { get; set; } = false;
@@ -140,6 +144,7 @@ namespace AutoClicker.Runtime.Core
         public void LogWriteLine(string message)
         {
             Console.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff")} | {message}");
+            Debug.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff")} | {message}");
         }
 
         public void Excute(Dictionary<object, object> runtimeDatabase)
@@ -152,16 +157,16 @@ namespace AutoClicker.Runtime.Core
             double screenWidth = resolution.Width;
             double screenHeight = resolution.Height;
 
-            for (int i = 0; i < marcoEvent.RepeatCount; i++)
+            for (int i = 0; i < marcoEvent.Repeat; i++)
             {
                 try
                 {
                     if (!string.IsNullOrEmpty(marcoEvent.Name))
                     {
                         string msg = $"{marcoEvent.Name}";
-                        if (marcoEvent.RepeatCount > 1)
+                        if (marcoEvent.Repeat > 1)
                         {
-                            msg += $" {i + 1}/{marcoEvent.RepeatCount}";
+                            msg += $" {i + 1}/{marcoEvent.Repeat}";
                         }
                         if (marcoEvent.ShowInLogger) LogWriteLine(msg);
                     }
@@ -294,6 +299,10 @@ namespace AutoClicker.Runtime.Core
                             else
                             {
                                 var hwnd = HwndInterface.GetHwndFromTitle(marcoEvent.WindowName);
+                                if (hwnd == 0x0000000000000000)
+                                {
+                                    LogWriteLine($"Window {marcoEvent.WindowName} not found"); break;
+                                }
                                 var pos = HwndInterface.GetHwndPos(hwnd);
                                 var size = HwndInterface.GetHwndSize(hwnd);
                                 var factor = ScreenHelper.GetWindowsScreenScalingFactor(false);
@@ -301,9 +310,26 @@ namespace AutoClicker.Runtime.Core
                                 BringToFront(marcoEvent.WindowName);
                                 Thread.Sleep(50);
                             }
-                            var searchResult = ScreenHelper.FindImageInRectangele(rectangle, marcoEvent.ImageFilePath);
-                            if (!string.IsNullOrEmpty(marcoEvent.ResultKey)) runtimeDatabase[marcoEvent.ResultKey] = searchResult;
-                            if (marcoEvent.ShowInLogger) LogWriteLine($"Image found at  {searchResult.X} {searchResult.Y}");
+                            if (marcoEvent.ImageSearchingArea.HasValue)
+                            {
+                                if (marcoEvent.ImageSearchingArea?.X != 0) rectangle.X += Math.Min((int)resolution.Width, (int)marcoEvent.ImageSearchingArea?.X);
+                                if (marcoEvent.ImageSearchingArea?.Y != 0) rectangle.Y += Math.Min((int)resolution.Width, (int)marcoEvent.ImageSearchingArea?.Y);
+                                if (marcoEvent.ImageSearchingArea?.Width != 0) rectangle.Width = (int)marcoEvent.ImageSearchingArea?.Width;
+                                if (marcoEvent.ImageSearchingArea?.Height != 0) rectangle.Height = (int)marcoEvent.ImageSearchingArea?.Height;
+                                rectangle.Width = Math.Min((int)resolution.Width - rectangle.X, rectangle.Width);
+                                rectangle.Height = Math.Min((int)resolution.Height - rectangle.Y, rectangle.Height);
+                            }
+
+                            try
+                            {
+                                var searchResult = ScreenHelper.FindImageInRectangle(rectangle, marcoEvent.ImageFilePath, marcoEvent.ImageMinSimilarity);
+                                if (!string.IsNullOrEmpty(marcoEvent.ResultKey)) runtimeDatabase[marcoEvent.ResultKey] = searchResult;
+                                if (marcoEvent.ShowInLogger) LogWriteLine($"Image found at  {searchResult.X} {searchResult.Y}");
+                            }
+                            catch (ImageNotFoundException ex)
+                            {
+                                LogWriteLine(ex.Message);
+                            }
                             break;
 
                         default:
@@ -353,7 +379,7 @@ namespace AutoClicker.Runtime.Core
             for (int i = 0; i < layer; i++) result += "\t";
             if (!string.IsNullOrWhiteSpace(Name)) result += $"[{Name}] ";
             result += $"{EventType}";
-            if (RepeatCount != 1) result += $" - Repeat:{RepeatCount}";
+            if (Repeat != 1) result += $" - Repeat:{Repeat}";
 
             switch (EventType)
             {

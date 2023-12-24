@@ -22,16 +22,20 @@ namespace AutoClicker.Runtime.Helper
             return bitmap;
         }
 
-        public static System.Drawing.Point FindImageInRectangele(Rectangle fromArea, string templatePath)
+        public static System.Drawing.Point FindImageInRectangle(Rectangle fromArea, string templatePath, double minSimilarity = 0)
         {
             Bitmap capturedScreen = CaptureScreen(fromArea);
+#if DEBUG
             capturedScreen.Save($"{DateTime.Now.Millisecond}-1.png");
             new Bitmap(templatePath).Save($"{DateTime.Now.Millisecond}-2.png");
+#endif
             var result = FindImage(capturedScreen, templatePath);
-            return new System.Drawing.Point(result.X + fromArea.X, result.Y + fromArea.Y);
+            return result.Similarity < minSimilarity
+                ? throw new ImageNotFoundException($"Cannot find image {templatePath} in {fromArea}")
+                : new System.Drawing.Point(result.Location.X + fromArea.X, result.Location.Y + fromArea.Y);
         }
 
-        public static System.Drawing.Point FindImage(Bitmap sourceBitmap, string templatePath)
+        public static FindImageResult FindImage(Bitmap sourceBitmap, string templatePath)
         {
             // Load source image and template
             string tempFilePathSource = $"{Path.GetTempFileName()}.png";
@@ -45,11 +49,13 @@ namespace AutoClicker.Runtime.Helper
             // Perform template matching
             Cv2.MatchTemplate(source, template, result, TemplateMatchModes.CCoeffNormed);
             Cv2.MinMaxLoc(result, out double minVal, out double maxVal, out OpenCvSharp.Point minLoc, out OpenCvSharp.Point maxLoc);
-            
+
+#if DEBUG
             Cv2.Rectangle(source, maxLoc, new OpenCvSharp.Point(maxLoc.X + template.Width, maxLoc.Y + template.Height), Scalar.Red, 2);
             source.SaveImage($"{DateTime.Now.Millisecond}-3.png");
+#endif
 
-            return new System.Drawing.Point(maxLoc.X + (template.Width / 2), maxLoc.Y + (template.Height / 2));
+            return new FindImageResult(new System.Drawing.Point(maxLoc.X + (template.Width / 2), maxLoc.Y + (template.Height / 2)), maxVal);
         }
 
         #region Display Resolution
@@ -96,5 +102,15 @@ namespace AutoClicker.Runtime.Helper
         }
 
         #endregion
+
+        public class ImageNotFoundException(string message) : Exception(message)
+        {
+        }
+
+        public struct FindImageResult(System.Drawing.Point location, double similarity)
+        {
+            public System.Drawing.Point Location { get; set; } = location;
+            public double Similarity { get; set; } = similarity;
+        }
     }
 }
